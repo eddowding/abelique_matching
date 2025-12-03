@@ -139,23 +139,9 @@ export default function DiscoverPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Everyone</h1>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push('/requests')}
-            >
-              Requests {requestCount > 0 && `(${requestCount})`}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push('/connections')}
-            >
-              Connections
-            </Button>
+        <div className="max-w-3xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold tracking-tight">Match</h1>
             <Button
               variant="ghost"
               size="sm"
@@ -164,11 +150,36 @@ export default function DiscoverPage() {
               Profile
             </Button>
           </div>
+          <nav className="flex gap-1 mt-3 -mb-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-none border-b-2 border-primary text-primary"
+            >
+              Discover
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-none border-b-2 border-transparent text-muted-foreground hover:text-foreground"
+              onClick={() => router.push('/requests')}
+            >
+              Requests {requestCount > 0 && <span className="ml-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">{requestCount}</span>}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-none border-b-2 border-transparent text-muted-foreground hover:text-foreground"
+              onClick={() => router.push('/connections')}
+            >
+              Connections
+            </Button>
+          </nav>
         </div>
       </header>
 
       {/* Main content */}
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-3xl mx-auto px-4 py-6">
         {profiles.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">
@@ -179,9 +190,9 @@ export default function DiscoverPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground mb-4">
-              {profiles.length} people{hasMore ? '+' : ''}
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {profiles.length} people{hasMore ? '+' : ''} sorted by compatibility
             </p>
             {profiles.map(profile => (
               <ProfileRow

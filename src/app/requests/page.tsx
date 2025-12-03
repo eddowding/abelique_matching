@@ -96,20 +96,47 @@ export default function RequestsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Connection Requests</h1>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push('/discover')}
-          >
-            Discover
-          </Button>
+        <div className="max-w-3xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold tracking-tight">Match</h1>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/profile')}
+            >
+              Profile
+            </Button>
+          </div>
+          <nav className="flex gap-1 mt-3 -mb-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-none border-b-2 border-transparent text-muted-foreground hover:text-foreground"
+              onClick={() => router.push('/discover')}
+            >
+              Discover
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-none border-b-2 border-primary text-primary"
+            >
+              Requests {requests.length > 0 && <span className="ml-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">{requests.length}</span>}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-none border-b-2 border-transparent text-muted-foreground hover:text-foreground"
+              onClick={() => router.push('/connections')}
+            >
+              Connections
+            </Button>
+          </nav>
         </div>
       </header>
 
       {/* Main content */}
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-3xl mx-auto px-4 py-6">
         {requests.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">
