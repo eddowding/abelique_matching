@@ -30,11 +30,39 @@ export async function GET(request: Request) {
   // TODO: Re-enable filtering once there are more users
   const showAll = searchParams.get('all') === 'true'
 
-  if (showAll || !currentProfile.embedding) {
-    // Show all profiles for demo/testing with pagination
+  if (showAll) {
+    // Show all profiles with real similarity scores
+    if (currentProfile.embedding) {
+      // Use vector similarity for sorting and scoring
+      const { data: matches, error: matchError } = await supabase.rpc('match_profiles', {
+        query_embedding: currentProfile.embedding,
+        match_count: 500, // Get all for pagination
+        current_user_id: user.id,
+      })
+
+      if (!matchError && matches) {
+        const paginatedMatches = matches.slice(offset, offset + limit)
+
+        // Generate match reasons for this page
+        const matchesWithReasons = await Promise.all(
+          paginatedMatches.map(async (match) => {
+            try {
+              const reason = await generateMatchReason(currentProfile as Profile, match as unknown as Profile)
+              return { ...match, match_reason: reason }
+            } catch {
+              return { ...match, match_reason: null }
+            }
+          })
+        )
+        return NextResponse.json(matchesWithReasons)
+      }
+    }
+
+    // Fallback: no embedding, show all without scores
     const { data: allProfiles, error: allError } = await supabase
       .from('profiles')
       .select('*')
+      .neq('id', user.id)
       .order('full_name', { ascending: true })
       .range(offset, offset + limit - 1)
 
@@ -44,11 +72,16 @@ export async function GET(request: Request) {
 
     const matchesWithScores = (allProfiles || []).map(profile => ({
       ...profile,
-      similarity: profile.id === user.id ? 1.0 : 0.5,
-      match_reason: profile.id === user.id ? 'This is you!' : null as string | null,
+      similarity: 0,
+      match_reason: null as string | null,
     }))
 
     return NextResponse.json(matchesWithScores)
+  }
+
+  if (!currentProfile.embedding) {
+    // No embedding yet, return empty
+    return NextResponse.json([])
   }
 
   // Get IDs to exclude (hidden profiles and already requested)

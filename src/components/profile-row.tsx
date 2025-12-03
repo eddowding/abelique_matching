@@ -43,7 +43,7 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
             <div className="flex-1 min-w-0 text-left">
               <div className="flex items-center gap-2">
                 <h3 className="font-medium truncate">{profile.full_name}</h3>
-                {similarityPercent && (
+                {similarityPercent && similarityPercent > 0 && (
                   <Badge variant="secondary" className="text-xs shrink-0">
                     {similarityPercent}%
                   </Badge>
@@ -52,6 +52,11 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
               {profile.current_work && (
                 <p className="text-sm text-muted-foreground truncate">
                   {profile.current_work}
+                </p>
+              )}
+              {profile.match_reason && (
+                <p className="text-sm text-primary/80 truncate mt-0.5">
+                  {profile.match_reason}
                 </p>
               )}
             </div>
