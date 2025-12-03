@@ -32,7 +32,7 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
 
   return (
     <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value={profile.id} className="border rounded-lg px-4 bg-white">
+      <AccordionItem value={profile.id} className="border border-gray-200 rounded-xl px-4 bg-white shadow-sm hover:shadow-md transition-shadow">
         <AccordionTrigger className="hover:no-underline py-3">
           <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
             <Avatar className="h-10 w-10 shrink-0 self-start mt-0.5">
