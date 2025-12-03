@@ -13,12 +13,13 @@ import {
 
 interface ProfileRowProps {
   profile: Profile & { similarity?: number; match_reason?: string | null }
+  currentUser?: { looking_for?: string[] | null; offering?: string[] | null }
   onConnect: (id: string) => void
   onHide: (id: string) => void
   loading?: boolean
 }
 
-export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowProps) {
+export function ProfileRow({ profile, currentUser, onConnect, onHide, loading }: ProfileRowProps) {
   const initials = profile.full_name
     .split(' ')
     .map(n => n[0])
@@ -29,6 +30,26 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
   const similarityPercent = profile.similarity
     ? Math.round(profile.similarity * 100)
     : null
+
+  // Check if profile's "looking for" matches current user's "offering"
+  const lookingForMatches = new Set(
+    (profile.looking_for || []).filter(item =>
+      (currentUser?.offering || []).some(offer =>
+        offer.toLowerCase().includes(item.toLowerCase()) ||
+        item.toLowerCase().includes(offer.toLowerCase())
+      )
+    )
+  )
+
+  // Check if profile's "offering" matches current user's "looking for"
+  const offeringMatches = new Set(
+    (profile.offering || []).filter(item =>
+      (currentUser?.looking_for || []).some(want =>
+        want.toLowerCase().includes(item.toLowerCase()) ||
+        item.toLowerCase().includes(want.toLowerCase())
+      )
+    )
+  )
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -81,8 +102,17 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
                 <p className="text-xs text-muted-foreground mb-1">Looking for</p>
                 <div className="flex flex-wrap gap-1">
                   {profile.looking_for.map(item => (
-                    <Badge key={item} variant="outline" className="text-xs">
+                    <Badge
+                      key={item}
+                      variant="outline"
+                      className={`text-xs ${
+                        lookingForMatches.has(item)
+                          ? 'bg-green-100 border-green-300 text-green-800'
+                          : ''
+                      }`}
+                    >
                       {item}
+                      {lookingForMatches.has(item) && ' ✓'}
                     </Badge>
                   ))}
                 </div>
@@ -94,8 +124,17 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
                 <p className="text-xs text-muted-foreground mb-1">Can offer</p>
                 <div className="flex flex-wrap gap-1">
                   {profile.offering.map(item => (
-                    <Badge key={item} variant="outline" className="text-xs">
+                    <Badge
+                      key={item}
+                      variant="outline"
+                      className={`text-xs ${
+                        offeringMatches.has(item)
+                          ? 'bg-green-100 border-green-300 text-green-800'
+                          : ''
+                      }`}
+                    >
                       {item}
+                      {offeringMatches.has(item) && ' ✓'}
                     </Badge>
                   ))}
                 </div>

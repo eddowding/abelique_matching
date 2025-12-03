@@ -11,6 +11,7 @@ const PAGE_SIZE = 20
 
 export default function DiscoverPage() {
   const [profiles, setProfiles] = useState<MatchProfile[]>([])
+  const [currentUser, setCurrentUser] = useState<{ looking_for?: string[] | null; offering?: string[] | null } | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -65,9 +66,25 @@ export default function DiscoverPage() {
     }
   }
 
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch('/api/profile')
+      if (response.ok) {
+        const data = await response.json()
+        setCurrentUser({
+          looking_for: data.looking_for,
+          offering: data.offering
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error)
+    }
+  }
+
   useEffect(() => {
     fetchProfiles(0)
     fetchCounts()
+    fetchCurrentUser()
   }, [fetchProfiles])
 
   // Infinite scroll observer
@@ -164,6 +181,7 @@ export default function DiscoverPage() {
             <ProfileRow
               key={profile.id}
               profile={profile}
+              currentUser={currentUser || undefined}
               onConnect={handleConnect}
               onHide={handleHide}
               loading={actionLoading === profile.id}
