@@ -1,6 +1,13 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy init to avoid build errors when RESEND_API_KEY not set
+let resend: Resend | null = null
+function getResend() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Match <notifications@yourdomain.com>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -12,13 +19,14 @@ interface EmailParams {
 }
 
 export async function sendEmail({ to, subject, html }: EmailParams) {
-  if (!process.env.RESEND_API_KEY) {
+  const client = getResend()
+  if (!client) {
     console.log('RESEND_API_KEY not set, skipping email:', { to, subject })
     return { success: true, skipped: true }
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await client.emails.send({
       from: FROM_EMAIL,
       to,
       subject,
