@@ -31,24 +31,42 @@ export function ProfileRow({ profile, currentUser, onConnect, onHide, loading }:
     ? Math.round(profile.similarity * 100)
     : null
 
-  // Check if profile's "looking for" matches current user's "offering"
+  // Check if profile's "looking for" matches current user's "offering" OR "looking for"
+  // (If both looking for same thing, they could find it in each other!)
   const lookingForMatches = new Set(
-    (profile.looking_for || []).filter(item =>
-      (currentUser?.offering || []).some(offer =>
-        offer.toLowerCase().includes(item.toLowerCase()) ||
-        item.toLowerCase().includes(offer.toLowerCase())
+    (profile.looking_for || []).filter(item => {
+      const itemLower = item.toLowerCase()
+      // Matches if current user is offering it
+      const matchesOffering = (currentUser?.offering || []).some(offer =>
+        offer.toLowerCase().includes(itemLower) ||
+        itemLower.includes(offer.toLowerCase())
       )
-    )
+      // Or if current user is also looking for the same thing
+      const matchesLookingFor = (currentUser?.looking_for || []).some(want =>
+        want.toLowerCase().includes(itemLower) ||
+        itemLower.includes(want.toLowerCase())
+      )
+      return matchesOffering || matchesLookingFor
+    })
   )
 
-  // Check if profile's "offering" matches current user's "looking for"
+  // Check if profile's "offering" matches current user's "looking for" OR "offering"
+  // (If both offering same thing, potential collaboration!)
   const offeringMatches = new Set(
-    (profile.offering || []).filter(item =>
-      (currentUser?.looking_for || []).some(want =>
-        want.toLowerCase().includes(item.toLowerCase()) ||
-        item.toLowerCase().includes(want.toLowerCase())
+    (profile.offering || []).filter(item => {
+      const itemLower = item.toLowerCase()
+      // Matches if current user is looking for it
+      const matchesLookingFor = (currentUser?.looking_for || []).some(want =>
+        want.toLowerCase().includes(itemLower) ||
+        itemLower.includes(want.toLowerCase())
       )
-    )
+      // Or if current user is also offering the same thing
+      const matchesOffering = (currentUser?.offering || []).some(offer =>
+        offer.toLowerCase().includes(itemLower) ||
+        itemLower.includes(offer.toLowerCase())
+      )
+      return matchesLookingFor || matchesOffering
+    })
   )
 
   return (
