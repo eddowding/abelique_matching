@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   const supabase = await createClient()
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get('limit') || '20')
+  const offset = parseInt(searchParams.get('offset') || '0')
   const includeReasons = searchParams.get('reasons') === 'true'
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -30,11 +31,12 @@ export async function GET(request: Request) {
   const showAll = searchParams.get('all') === 'true'
 
   if (showAll || !currentProfile.embedding) {
-    // Show all profiles for demo/testing
+    // Show all profiles for demo/testing with pagination
     const { data: allProfiles, error: allError } = await supabase
       .from('profiles')
       .select('*')
-      .limit(100)
+      .order('full_name', { ascending: true })
+      .range(offset, offset + limit - 1)
 
     if (allError) {
       return NextResponse.json({ error: allError.message }, { status: 500 })

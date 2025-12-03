@@ -1,39 +1,51 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { MatchCard } from '@/components/match-card'
+import { ProfileRow } from '@/components/profile-row'
 import { Profile } from '@/types/database'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 
 type MatchProfile = Profile & { similarity?: number; match_reason?: string | null }
 
+const PAGE_SIZE = 20
+
 export default function DiscoverPage() {
   const router = useRouter()
-  const [matches, setMatches] = useState<MatchProfile[]>([])
+  const [profiles, setProfiles] = useState<MatchProfile[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [requestCount, setRequestCount] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const [offset, setOffset] = useState(0)
+  const observerTarget = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    fetchMatches()
-    fetchRequestCount()
-  }, [])
+  const fetchProfiles = useCallback(async (currentOffset: number, append = false) => {
+    if (append) {
+      setLoadingMore(true)
+    } else {
+      setLoading(true)
+    }
 
-  const fetchMatches = async () => {
     try {
-      const response = await fetch('/api/matches?reasons=true')
+      const response = await fetch(`/api/matches?all=true&limit=${PAGE_SIZE}&offset=${currentOffset}`)
       if (response.ok) {
         const data = await response.json()
-        setMatches(data)
+        if (append) {
+          setProfiles(prev => [...prev, ...data])
+        } else {
+          setProfiles(data)
+        }
+        setHasMore(data.length === PAGE_SIZE)
       }
     } catch (error) {
-      console.error('Error fetching matches:', error)
+      console.error('Error fetching profiles:', error)
     } finally {
       setLoading(false)
+      setLoadingMore(false)
     }
-  }
+  }, [])
 
   const fetchRequestCount = async () => {
     try {
@@ -47,6 +59,31 @@ export default function DiscoverPage() {
     }
   }
 
+  useEffect(() => {
+    fetchProfiles(0)
+    fetchRequestCount()
+  }, [fetchProfiles])
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          const newOffset = offset + PAGE_SIZE
+          setOffset(newOffset)
+          fetchProfiles(newOffset, true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasMore, loadingMore, loading, offset, fetchProfiles])
+
   const handleConnect = async (targetId: string) => {
     setActionLoading(targetId)
     try {
@@ -58,11 +95,9 @@ export default function DiscoverPage() {
 
       if (response.ok) {
         const data = await response.json()
-        // Remove from list
-        setMatches(prev => prev.filter(m => m.id !== targetId))
+        setProfiles(prev => prev.filter(m => m.id !== targetId))
 
         if (data.is_mutual) {
-          // Show celebration or redirect to connections
           alert("It's a match! You can now see their contact info in Connections.")
         }
       }
@@ -83,7 +118,7 @@ export default function DiscoverPage() {
       })
 
       if (response.ok) {
-        setMatches(prev => prev.filter(m => m.id !== targetId))
+        setProfiles(prev => prev.filter(m => m.id !== targetId))
       }
     } catch (error) {
       console.error('Error hiding:', error)
@@ -95,7 +130,7 @@ export default function DiscoverPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Finding your matches...</p>
+        <p className="text-muted-foreground">Loading profiles...</p>
       </div>
     )
   }
@@ -105,7 +140,7 @@ export default function DiscoverPage() {
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Discover</h1>
+          <h1 className="text-xl font-semibold">Everyone</h1>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -134,30 +169,36 @@ export default function DiscoverPage() {
 
       {/* Main content */}
       <main className="max-w-2xl mx-auto px-4 py-6">
-        {matches.length === 0 ? (
+        {profiles.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">
-              No more matches to show right now.
+              No profiles to show right now.
             </p>
             <p className="text-sm text-muted-foreground">
               Check back later as more people join!
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              {matches.length} potential matches
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground mb-4">
+              {profiles.length} people{hasMore ? '+' : ''}
             </p>
-            <Separator />
-            {matches.map(match => (
-              <MatchCard
-                key={match.id}
-                profile={match}
+            {profiles.map(profile => (
+              <ProfileRow
+                key={profile.id}
+                profile={profile}
                 onConnect={handleConnect}
                 onHide={handleHide}
-                loading={actionLoading === match.id}
+                loading={actionLoading === profile.id}
               />
             ))}
+
+            {/* Infinite scroll trigger */}
+            <div ref={observerTarget} className="h-10 flex items-center justify-center">
+              {loadingMore && (
+                <p className="text-sm text-muted-foreground">Loading more...</p>
+              )}
+            </div>
           </div>
         )}
       </main>
