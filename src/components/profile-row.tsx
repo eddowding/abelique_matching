@@ -34,13 +34,13 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value={profile.id} className="border rounded-lg px-4 bg-white">
         <AccordionTrigger className="hover:no-underline py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Avatar className="h-10 w-10 shrink-0">
+          <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
+            <Avatar className="h-10 w-10 shrink-0 self-start mt-0.5">
               <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0 text-left">
+            <div className="flex-1 min-w-0 text-left overflow-hidden">
               <div className="flex items-center gap-2">
                 <h3 className="font-medium truncate">{profile.full_name}</h3>
                 {similarityPercent && similarityPercent > 0 && (
@@ -55,7 +55,7 @@ export function ProfileRow({ profile, onConnect, onHide, loading }: ProfileRowPr
                 </p>
               )}
               {profile.match_reason && (
-                <p className="text-sm text-primary/80 truncate mt-0.5">
+                <p className="text-sm text-primary/80 line-clamp-2 mt-0.5">
                   {profile.match_reason}
                 </p>
               )}
