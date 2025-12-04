@@ -9,7 +9,7 @@ function getResend() {
   return resend
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'Match <notifications@yourdomain.com>'
+const FROM_EMAIL = process.env.FROM_EMAIL || 'Abelique <notifications@yourdomain.com>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 interface EmailParams {
@@ -47,7 +47,7 @@ export async function sendEmail({ to, subject, html }: EmailParams) {
 
 export function newRequestEmail(requesterName: string) {
   return {
-    subject: `${requesterName} wants to connect with you on Match`,
+    subject: `${requesterName} wants to connect with you on Abelique`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -67,7 +67,7 @@ export function newRequestEmail(requesterName: string) {
             View Request
           </a>
           <p style="margin-top: 32px; font-size: 14px; color: #666;">
-            You're receiving this because you have an account on Match.
+            You're receiving this because you have an account on Abelique.
             <a href="${APP_URL}/profile" style="color: #666;">Manage notification preferences</a>
           </p>
         </body>
@@ -101,13 +101,13 @@ export function mutualMatchEmail(matchName: string, matchEmail: string, matchLin
             ${contactInfo}
           </div>
           <p style="margin-bottom: 24px;">
-            Reach out and start a conversation! A simple "Hi, I saw we matched on Match..." works great.
+            Reach out and start a conversation! A simple "Hi, I saw we matched on Abelique..." works great.
           </p>
           <a href="${APP_URL}/connections" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
             View All Connections
           </a>
           <p style="margin-top: 32px; font-size: 14px; color: #666;">
-            You're receiving this because you have an account on Match.
+            You're receiving this because you have an account on Abelique.
             <a href="${APP_URL}/profile" style="color: #666;">Manage notification preferences</a>
           </p>
         </body>
@@ -118,7 +118,7 @@ export function mutualMatchEmail(matchName: string, matchEmail: string, matchLin
 
 export function weeklyDigestEmail(stats: { newMatches: number; pendingRequests: number }) {
   return {
-    subject: `Your weekly Match update: ${stats.newMatches} new matches`,
+    subject: `Your weekly Abelique update: ${stats.newMatches} new matches`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -136,7 +136,7 @@ export function weeklyDigestEmail(stats: { newMatches: number; pendingRequests: 
             Check Your Matches
           </a>
           <p style="margin-top: 32px; font-size: 14px; color: #666;">
-            You're receiving this because you have an account on Match.
+            You're receiving this because you have an account on Abelique.
             <a href="${APP_URL}/profile" style="color: #666;">Unsubscribe from weekly digest</a>
           </p>
         </body>

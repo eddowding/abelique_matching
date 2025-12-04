@@ -11,20 +11,40 @@ export default function Home() {
             Find your people
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            AI-powered matchmaking that connects you with the right people for
-            collaboration, mentorship, and meaningful professional relationships.
+            AI-powered matchmaking for communities. Create a group for your
+            team, cohort, or community and let AI help everyone find the right connections.
           </p>
-          <div className="pt-4">
+          <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/login">
               <Button size="lg" className="text-lg px-8">
                 Get Started
               </Button>
             </Link>
+            <Link href="/groups/new">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Create a Group
+              </Button>
+            </Link>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Free to use. Anyone can create a group.
+          </p>
         </div>
 
         {/* Features */}
         <div className="mt-24 grid md:grid-cols-3 gap-8">
+          <div className="text-center space-y-3">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold">Groups for Any Community</h3>
+            <p className="text-gray-600 text-sm">
+              Create a group for your accelerator cohort, company offsite, conference, or any community.
+            </p>
+          </div>
+
           <div className="text-center space-y-3">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
               <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,31 +53,19 @@ export default function Home() {
             </div>
             <h3 className="text-lg font-semibold">AI-Powered Matching</h3>
             <p className="text-gray-600 text-sm">
-              Our AI understands your goals and finds people who complement your skills and interests.
+              AI understands who is looking for what, and suggests the best connections with explanations.
             </p>
           </div>
 
           <div className="text-center space-y-3">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
               <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
             <h3 className="text-lg font-semibold">Mutual Matching</h3>
             <p className="text-gray-600 text-sm">
-              Connect only when both people are interested. No awkward cold outreach.
-            </p>
-          </div>
-
-          <div className="text-center space-y-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold">Meaningful Connections</h3>
-            <p className="text-gray-600 text-sm">
-              Quality over quantity. We explain why each match makes sense.
+              Contact info only shared when both people want to connect. No awkward cold outreach.
             </p>
           </div>
         </div>
@@ -67,10 +75,10 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-center mb-12">How it works</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { step: '1', title: 'Create profile', desc: 'Tell us about yourself and what you\'re looking for' },
-              { step: '2', title: 'Browse matches', desc: 'See people ranked by compatibility with AI explanations' },
-              { step: '3', title: 'Connect', desc: 'Express interest in people you\'d like to meet' },
-              { step: '4', title: 'Get introduced', desc: 'When it\'s mutual, exchange contact info' },
+              { step: '1', title: 'Create a group', desc: 'Anyone can create a group and invite members via link' },
+              { step: '2', title: 'Set up profiles', desc: 'Members describe what they\'re looking for and offering' },
+              { step: '3', title: 'Browse matches', desc: 'AI ranks members by compatibility with explanations' },
+              { step: '4', title: 'Connect', desc: 'When it\'s mutual, exchange contact info' },
             ].map(item => (
               <div key={item.step} className="text-center">
                 <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3 font-semibold">
@@ -79,6 +87,28 @@ export default function Home() {
                 <h3 className="font-semibold mb-1">{item.title}</h3>
                 <p className="text-sm text-gray-600">{item.desc}</p>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Use cases */}
+        <div className="mt-24 text-center">
+          <h2 className="text-2xl font-bold mb-6">Perfect for</h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              'Accelerator cohorts',
+              'Company offsites',
+              'Conferences',
+              'Alumni networks',
+              'Community groups',
+              'Networking events',
+            ].map(useCase => (
+              <span
+                key={useCase}
+                className="px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-700"
+              >
+                {useCase}
+              </span>
             ))}
           </div>
         </div>

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "mcp__super-mcp__use_tool",
+      "mcp__super-mcp__list_tool_packages"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
