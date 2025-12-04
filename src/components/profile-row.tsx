@@ -17,9 +17,10 @@ interface ProfileRowProps {
   onConnect: (id: string) => void
   onHide: (id: string) => void
   loading?: boolean
+  groupId?: string
 }
 
-export function ProfileRow({ profile, currentUser, onConnect, onHide, loading }: ProfileRowProps) {
+export function ProfileRow({ profile, currentUser, onConnect, onHide, loading, groupId }: ProfileRowProps) {
   const initials = profile.full_name
     .split(' ')
     .map(n => n[0])
@@ -73,15 +74,15 @@ export function ProfileRow({ profile, currentUser, onConnect, onHide, loading }:
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value={profile.id} className="border border-gray-200 rounded-xl px-4 bg-white shadow-sm hover:shadow-md transition-shadow">
         <AccordionTrigger className="hover:no-underline py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
-            <Avatar className="h-10 w-10 shrink-0 self-start mt-0.5">
+          <div className="flex items-start gap-3 flex-1 min-w-0 pr-2 overflow-hidden">
+            <Avatar className="h-10 w-10 shrink-0">
               <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0 text-left overflow-hidden">
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium truncate">{profile.full_name}</h3>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-medium truncate max-w-[200px]">{profile.full_name}</h3>
                 {similarityPercent && similarityPercent > 0 && (
                   <Badge variant="secondary" className="text-xs shrink-0">
                     {similarityPercent}%
@@ -89,12 +90,12 @@ export function ProfileRow({ profile, currentUser, onConnect, onHide, loading }:
                 )}
               </div>
               {profile.current_work && (
-                <p className="text-sm text-muted-foreground truncate">
+                <p className="text-sm text-muted-foreground line-clamp-1">
                   {profile.current_work}
                 </p>
               )}
               {profile.match_reason && (
-                <p className="text-sm text-primary/80 line-clamp-2 mt-0.5">
+                <p className="text-sm text-primary/80 line-clamp-2 mt-0.5 break-words">
                   {profile.match_reason}
                 </p>
               )}
@@ -159,19 +160,29 @@ export function ProfileRow({ profile, currentUser, onConnect, onHide, loading }:
               </div>
             )}
 
-            {profile.linkedin_url && (
-              <a
-                href={profile.linkedin_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                </svg>
-                LinkedIn
-              </a>
-            )}
+            <div className="flex items-center gap-4">
+              {profile.linkedin_url && (
+                <a
+                  href={profile.linkedin_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                  LinkedIn
+                </a>
+              )}
+              {groupId && (
+                <a
+                  href={`/groups/${groupId}/member/${profile.id}`}
+                  className="text-sm text-muted-foreground hover:text-primary hover:underline"
+                >
+                  View Full Profile
+                </a>
+              )}
+            </div>
 
             <div className="flex gap-2 pt-2">
               <Button

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Settings, User, Share2, Copy, Sparkles, Info } from 'lucide-react'
+import { ArrowLeft, Settings, User, Share2, Copy, Sparkles, Info, UserCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProfileRow } from '@/components/profile-row'
 import { Group, GroupProfileData } from '@/types/database'
@@ -304,7 +304,7 @@ export default function GroupDiscoverPage({ params }: { params: Promise<{ id: st
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
@@ -312,6 +312,14 @@ export default function GroupDiscoverPage({ params }: { params: Promise<{ id: st
               title="Group Info & Invite Link"
             >
               <Info className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push('/account')}
+              title="Account Settings"
+            >
+              <UserCircle className="w-5 h-5" />
             </Button>
             {group?.role === 'admin' && (
               <Button
@@ -381,6 +389,7 @@ export default function GroupDiscoverPage({ params }: { params: Promise<{ id: st
                 onConnect={handleConnect}
                 onHide={handleHide}
                 loading={actionLoading === profile.user_id}
+                groupId={groupId}
               />
             ))}
 

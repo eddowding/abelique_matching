@@ -264,6 +264,13 @@ export default function GroupInfoPage({ params }: { params: Promise<{ id: string
           >
             View Your Connections
           </Button>
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+            onClick={() => router.push('/account')}
+          >
+            Account Settings
+          </Button>
         </div>
 
         {/* Leave Group */}

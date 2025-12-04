@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { GroupProfileData } from '@/types/database'
 import OpenAI from 'openai'
@@ -8,25 +8,35 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 type RouteParams = { params: Promise<{ id: string }> }
 
 async function generateMatchReason(
-  userProfile: { full_name: string; profile_data: GroupProfileData },
+  viewerProfile: { full_name: string; profile_data: GroupProfileData },
   matchProfile: { full_name: string; profile_data: GroupProfileData }
 ): Promise<string> {
+  const matchFirstName = matchProfile.full_name.split(' ')[0]
+
   try {
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: 'Generate a brief 1 sentence reason why YOU (the reader) should connect with this person. Write in second person (use "you" and "they"). Focus on what they offer that matches what you need, or shared interests. Be specific and warm. Example: "They could help with your fundraising - they have investor connections and you\'re looking for funding."',
+          content: `Generate a brief 1-2 sentence reason why the reader should connect with ${matchFirstName}. Use "you" for the reader. Refer to ${matchFirstName} by name or "they". Focus on what ${matchFirstName} offers that matches what the reader needs. Be specific and warm.`,
         },
         {
           role: 'user',
-          content: `You: ${userProfile.profile_data?.bio || ''} Working on: ${userProfile.profile_data?.current_work || ''} Looking for: ${userProfile.profile_data?.looking_for?.join(', ') || ''} Offering: ${userProfile.profile_data?.offering?.join(', ') || ''}
+          content: `READER (you):
+Bio: ${viewerProfile.profile_data?.bio || 'Not specified'}
+Working on: ${viewerProfile.profile_data?.current_work || 'Not specified'}
+Looking for: ${viewerProfile.profile_data?.looking_for?.join(', ') || 'Not specified'}
+Offering: ${viewerProfile.profile_data?.offering?.join(', ') || 'Not specified'}
 
-Them: ${matchProfile.profile_data?.bio || ''} Working on: ${matchProfile.profile_data?.current_work || ''} Looking for: ${matchProfile.profile_data?.looking_for?.join(', ') || ''} Offering: ${matchProfile.profile_data?.offering?.join(', ') || ''}`,
+${matchFirstName.toUpperCase()} (the person to connect with):
+Bio: ${matchProfile.profile_data?.bio || 'Not specified'}
+Working on: ${matchProfile.profile_data?.current_work || 'Not specified'}
+Looking for: ${matchProfile.profile_data?.looking_for?.join(', ') || 'Not specified'}
+Offering: ${matchProfile.profile_data?.offering?.join(', ') || 'Not specified'}`,
         },
       ],
-      max_tokens: 60,
+      max_tokens: 100,
       temperature: 0.7,
     })
     return response.choices[0].message.content || ''
