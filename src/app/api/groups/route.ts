@@ -93,6 +93,30 @@ export async function POST(request: Request) {
     hashedPassword = await bcrypt.hash(password, 10)
   }
 
+  // Ensure user has a profile (required for foreign key)
+  // Use service client to bypass RLS for profile creation
+  const { data: existingProfile } = await serviceClient
+    .from('profiles')
+    .select('id')
+    .eq('id', user.id)
+    .single()
+
+  if (!existingProfile) {
+    // Create a minimal profile for the new user
+    const { error: profileError } = await serviceClient
+      .from('profiles')
+      .insert({
+        id: user.id,
+        email: user.email!,
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'New User',
+      })
+
+    if (profileError) {
+      console.error('Profile creation error:', profileError)
+      return NextResponse.json({ error: 'Failed to create profile' }, { status: 500 })
+    }
+  }
+
   // Create the group using service client to bypass RLS
   const { data: group, error: groupError } = await serviceClient
     .from('groups')
