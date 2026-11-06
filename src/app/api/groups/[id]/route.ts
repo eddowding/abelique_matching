@@ -1,6 +1,7 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import type { Database } from '@/types/database'
 
 type RouteParams = { params: Promise<{ id: string }> }
 
@@ -77,7 +78,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   const body = await request.json()
   const { name, description, password, regenerate_invite } = body
 
-  const updates: Record<string, unknown> = {
+  const updates: Database['public']['Tables']['groups']['Update'] = {
     updated_at: new Date().toISOString(),
   }
 
